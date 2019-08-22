@@ -13,3 +13,4 @@
 					gcc sonido.c -o sonidoEjecutable
 					padsp ./rep prueva.wav
 
+s
