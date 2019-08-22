@@ -1,0 +1,15 @@
+*)		Para Compilar y Ejecutar el Programa de Audio se pone en consola:
+			gcc nombre.c -o Ejecutable
+			padsp ./Ejecutable pista.wav
+*)		Donde padsp es un comando que llama a pulseAudio 		antiguo de la tarjeta de audio.
+		./Ejecutable es el nombre de el ejecutable
+
+		Y Pista.wav es el nombre del archivo a reproducir:
+*)		Tiene que ser una pista de audio sin compresion con una frecuencia de 16 bits.
+		Si la pista se encuentra en un Directorio es necesario especificarlo.
+
+
+*)		Ejemplo:
+					gcc sonido.c -o sonidoEjecutable
+					padsp ./rep prueva.wav
+
