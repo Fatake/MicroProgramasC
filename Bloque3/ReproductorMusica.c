@@ -32,7 +32,7 @@ int main(int argc, char **argv){
 	inicio=final=NULL;
 	//---------------------------------------------------------------------------------
 	do{
-		m=menu();
+		m = menu();
 		switch(m){
 			case 1:
 				do{
