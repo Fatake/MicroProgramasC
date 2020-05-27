@@ -1,0 +1,37 @@
+Compilando OpenMp...
+Compilado :3
+Compilando mpi
+Compilado :3
+\n\n Ejecutando OpenMP
+
+<-2->
+
+Matriz: 16x16 
+Procesos: 2
+Tiempo: 0.000275 segundos
+Memoria utilizada: 1544 en Kilobytes
+
+Matriz: 32x32 
+Procesos: 2
+Tiempo: 0.000425 segundos
+Memoria utilizada: 1544 en Kilobytes
+
+Matriz: 64x64 
+Procesos: 2
+Tiempo: 0.001562 segundos
+Memoria utilizada: 1920 en Kilobytes
+
+Matriz: 128x128 
+Procesos: 2
+Tiempo: 0.009591 segundos
+Memoria utilizada: 2444 en Kilobytes
+
+Matriz: 256x256 
+Procesos: 2
+Tiempo: 0.059255 segundos
+Memoria utilizada: 5016 en Kilobytes
+
+Matriz: 512x512 
+Procesos: 2
+Tiempo: 0.410927 segundos
+Memoria utilizada: 16428 en Kilobytes

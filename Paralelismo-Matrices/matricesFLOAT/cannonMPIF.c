@@ -1,16 +1,23 @@
-#include<stdio.h>
-#include<mpi.h>
-#include<math.h>
-#include<stdlib.h>
-#include<time.h>
-#include "../util/matrix.h"
+#include <stdio.h>
+#include <mpi.h>
+#include <math.h>
+#include <stdlib.h>
+#include <time.h>
+#include "matrix.h"
+#include <sys/resource.h>
 
-#define N 4
+
+long get_mem_usage(){
+    struct rusage myusage;
+    getrusage(RUSAGE_SELF,&myusage);
+
+    return myusage.ru_maxrss;
+}
+
 
 void imprimematriz(float* matriz, int n);
 
-MatrixMatrixMultiply(int n, float *a, float *b, float *c, float *c_grande, MPI_Comm comm)
-{
+MatrixMatrixMultiply(int n, float *a, float *b, float *c, float *c_grande, MPI_Comm comm){
 	int i;
 	int nlocal;
 	int npes, dims[2], periods[2];
@@ -114,8 +121,9 @@ void imprimematriz(float *matriz, int n)
 	}
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]){
+	int N = atoi(argv[1]);//Tam Matriz
+	int nro_procesos = atoi(argv[2]);//Num Procesos;
 
     float *a = create_array_as_matrix(N, N);
     float *b = create_array_as_matrix(N, N);
@@ -123,13 +131,8 @@ int main(int argc, char *argv[])
     
     populate_array_as_matrix(&a[0], N, N);
     populate_array_as_matrix(&b[0], N, N);
-	printf("A\n");
-	 imprimematriz(&a[0], N);
-	 printf("B\n");
-	imprimematriz(&b[0], N);
 
     MPI_Init(&argc,&argv);
-	int nro_procesos;
 	MPI_Comm_size(MPI_COMM_WORLD, &nro_procesos);
 
 	int n_chica = N/sqrt(nro_procesos);
@@ -179,18 +182,13 @@ int main(int argc, char *argv[])
         // Serial multiplication. In order to check te results.
         float *d = create_array_as_matrix(N, N);
         MatrixMultiply(N, a, b, d);
-		printf("D\n");
-       imprimematriz(&d[0], N);
-        printf("\n\n");
-		printf("C\n");
-       imprimematriz(&c[0], N);
+
         
         float equal = array_as_matrix_equals(&d[0], &c[0], N, N);
-        if(equal){
-            printf("\nSon iguales\n");
-        }
-		printf("\n\nTamano: %d",N);
-        printf("\nTiempo: %.4f segundos\n", (end - start));
+
+		printf("\nMatriz: %dx%d \nProcesos: %d\n",N,N,nro_procesos);
+    	printf("Tiempo: %.6f segundos\n", (end - start));
+    	printf("Memoria utilizada: %1d en Kilobytes\n",get_mem_usage());
     }
 
 	MPI_Finalize();

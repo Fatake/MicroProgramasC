@@ -1,22 +1,25 @@
 #include <stdio.h>
-#include "../util/matrix.h"
+#include <sys/resource.h>
+#include "matrix.h"
 #include "omp.h"
-#define N 16 //matrix size
-#define P_SQRT 2
-#define P (P_SQRT * P_SQRT) //number of processes
-#define BLOCK_SZ (N / P_SQRT) //block size
 
+long get_mem_usage(){
+    struct rusage myusage;
+    getrusage(RUSAGE_SELF,&myusage);
+
+    return myusage.ru_maxrss;
+}
 
 /**
  * multiply the corresponding submatrices of A and B.
  */
-void process_mult(Matrix *A, Matrix *B, Matrix *C) {
+void process_mult(Matrix *A, Matrix *B, Matrix *C, int P_SQRT, float BLOCK_SZ,int P) {
     int r, c, id, k, 
         rbegin, rend, cbegin, cend, // block delimiters
         l, m;
     Matrix sa, sb, sc;
 
-    #pragma omp parallel default(none) private(l, m, r, c, k, rbegin, rend, cbegin, cend, id, sa, sb, sc) shared(A, B, C) num_threads(P)
+    #pragma omp parallel default(none) private(l, m, r, c, k, rbegin, rend, cbegin, cend, id, sa, sb, sc) shared(A, B, C,P_SQRT,BLOCK_SZ) num_threads(P)
     {
         id = omp_get_thread_num();
         rbegin = (id/P_SQRT)*BLOCK_SZ;
@@ -49,8 +52,12 @@ void process_mult(Matrix *A, Matrix *B, Matrix *C) {
     }
 }
 
-int main() {
- 
+int main(int argc, char **argv){
+    int N = atoi(argv[1]);//Tam Matriz
+    int P_SQRT =  atoi(argv[2]);//Num Procesos
+    int P = (P_SQRT * P_SQRT); //number of processes
+    float BLOCK_SZ = (N / P_SQRT) ;//block size
+
     Matrix A, B, C;
     double t1, t2;
     int i;
@@ -62,25 +69,20 @@ int main() {
     populate_matrix(&A);
     populate_matrix(&B);
 
-    printf("Matrices generadas\n");
-    print_matrix(&A, 'A');
-    printf("\n\n");
-    print_matrix(&B, 'B');
-    
     shift_matrix_left(&A,BLOCK_SZ, 1);
     shift_matrix_up(&B,BLOCK_SZ, 1);
 
     t1 = omp_get_wtime();
     for(i = 0; i < P_SQRT; i++){
-        process_mult(&A, &B, &C);
+        process_mult(&A, &B, &C,P_SQRT,BLOCK_SZ,P);
         shift_matrix_left(&A, BLOCK_SZ, 0);
         shift_matrix_up(&B, BLOCK_SZ, 0);
     }
     t2 = omp_get_wtime();
 
-    printf("\nResultado\n\n");
-  //print_matrix(&C, 'C');
-    printf("\nTiempo: %.4f segundos\n", (t2 - t1));
+    printf("\nMatriz: %dx%d \nProcesos: %d\n",N,N,P_SQRT);
+    printf("Tiempo: %.6f segundos\n", (t2 - t1));
+    printf("Memoria utilizada: %1d en Kilobytes\n",get_mem_usage());
     return 0;
 }
 
