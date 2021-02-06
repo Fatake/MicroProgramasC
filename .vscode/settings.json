@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "*.html": "html",
-        "AREA.C": "cpp"
+        "AREA.C": "cpp",
+        "FOR.C": "cpp",
+        "FORFAC.C": "cpp"
     }
 }
